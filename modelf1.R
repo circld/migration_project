@@ -23,7 +23,7 @@ step.MCMC <- function(pop, capacity, move.cost) {
 
   # create pop, utility, move cost lists for src and dest regions
   p <- list(src=pop[region.src], dest=pop[region.dest])
-  u <- list(src=capacity[region.src] - p$src, dest=capacity[region.dest] - p$dest)
+  u <- list(src=capacity[region.src] - p$src, dest=capacity[region.dest] - p$dest + 1)
 
   # calculate whether to accept this step using M-H
   cost <- move.cost[region.src,region.dest]
