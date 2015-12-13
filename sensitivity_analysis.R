@@ -7,6 +7,14 @@ library(ggthemes)
 # multi-region, cost, utility, proposal distribution generalization
 source('modelf1.R')
 
+# base param helper function
+reset.params <- function() {
+  p <- c(379, 547, 274, 135)
+  k <- c(2400, 1800, 1700, 1900)
+  c <- matrix(c(0,200,400,600,200,0,200,400,400,200,0,200,600,400,200,0),nrow=4)
+  return(list(p = p, k = k, c = c))
+}
+
 # experiment runner helper function
 run.mcmc <- function(p, k, c, iter = 60000, burn.in = 0) {
   pmat <- matrix(NA, 60000, 4)

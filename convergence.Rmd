@@ -1,0 +1,81 @@
+### Convergence
+
+The previous section examined model dynamics by varying parameter and recording steady state results. These results, however, depend upon the MCMC population estimates converging. While visual inspection suggests that in each case, the populations converged, this section will take a more formal approach to confirming convergence for each of the above cases.
+
+The testing in this section will utilize the <code>coda</code> package, specifically the implementation of the Gelman-Rubin convergence diagnostics. The idea behind this approach centers on the variance within and between multiple runs of the Markov Chains with very different starting conditions. When the chains have mixed sufficiently, these variances should be roughly equal. The Gelman-Rubin diagnostic indicates how much improvement may be possible by iterating the chains infinitely.
+
+#### Base model
+
+For the base model, both the Gelman-Rubin shrinkage ratio and graphical aids will help us determine whether convergence has taken place.
+
+```{r convergence.base, message=FALSE, echo=FALSE}
+library(coda)
+source('convergence.R')
+
+params <- reset.params()
+base.convergence <- test.gr.convergence(params$p, params$k, params$c, plot = TRUE)
+```
+
+#### Other models
+
+For the sake of conciseness, the convergence statistics are displayed for the other exploratory cases in the table below:
+
+```{r convergence.table, echo=FALSE}
+library(knitr)
+
+# create matrix with point estimates for each case
+result <- matrix(0, nrow = 9, ncol = 4)
+result[1, ] <- t(base.convergence[, 1])  # append base case
+
+# pop in region 4
+params <- reset.params()
+params$p <- c(0, 0, 0, 1335)
+result[2, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# population is evenly split between regions 1 and 4
+params <- reset.params()
+params$p <- c(667, 0, 0, 668)
+result[3, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# increase cost of moving into region 1
+params <- reset.params()
+params$c[1:4, 1] <- params$c[1:4, 1] * 2
+result[4, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# increase cost of moving out of region 1
+params <- reset.params()
+params$c[1, 1:4] <- params$c[1, 1:4] * 2
+result[5, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# quadruple all pairwise moving costs
+params <- reset.params()
+params$c <- params$c * 4
+result[6, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# decrease k_1 to 2000
+params <- reset.params()
+params$k[1] <- 2000
+result[7, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# set all k = 1950
+params <- reset.params()
+params$k <- rep(1950, times = 4)
+result[8, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# double k
+params <- reset.params()
+params$k <- params$k * 2
+result[9, ] <- t(test.gr.convergence(params$p, params$k, params$c)[, 1])
+
+# labels
+rownames(result) <- c(
+  'base case', 'init. cond.: all pop in region 4', 'init. cond.: pop split b/w 1 and 4',
+  'cost: increase into region 1', 'cost: increase out of region 1', 'cost: quadruple all costs',
+  'utility: decrease k1 to 2000', 'utility: set all k = 1950', 'utility: double all k'
+)
+colnames(result) <- c('Region 1', 'Region 2', 'Region 3', 'Region 4')
+
+print(result)
+```
+
+As a rule of thumb, the diagnostic should be below 1.2 to be considered converged. Most satisfy this condition; notably, the quadruple cost and double utility paramter scenarios seem to require further iterations before convergence.

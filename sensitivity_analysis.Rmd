@@ -8,13 +8,6 @@ The base model relies upon arbitrarily chosen parameter values.
 ```{r params, message=FALSE, warning=FALSE}
 source('sensitivity_analysis.R')
 
-reset.params <- function() {
-  p <- c(379, 547, 274, 135)
-  k <- c(2400, 1800, 1700, 1900)
-  c <- matrix(c(0,200,400,600,200,0,200,400,400,200,0,200,600,400,200,0),nrow=4)
-  return(list(p = p, k = k, c = c))
-}
-
 params <- reset.params()
 params$c  # matrix of costs for moving from region i (row) to j (col)
 ```
