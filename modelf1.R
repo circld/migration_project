@@ -27,18 +27,18 @@ step.MCMC <- function(pop, capacity, move.cost) {
 
   # calculate whether to accept this step using M-H
   cost <- move.cost[region.src,region.dest]
-  
+
   # calculate a1
-  
+
   a1 <- (u$dest - cost)/u$src
-  
+
   # calculate a2
-  
+
   lpop <- length(pop)
   lpop0 <- length(pop[pop != 0])
   lpop0m1 <- lpop0-1
   lpop0p1 <- lpop0+1
-  
+
   if(p[1] == 1 && p[2] == 0){
     a2 <- 1
   } else if(p[1] == 1){
@@ -52,9 +52,9 @@ step.MCMC <- function(pop, capacity, move.cost) {
   } else{
     a2 <- 1
   }
-  
-  a <- a1*a2
-  
+
+  a <- min(1, a1*a2)
+
   if(runif(1) < a && p$src > 1){
     pop[region.src] <- p$src - 1
     pop[region.dest] <- p$dest + 1
