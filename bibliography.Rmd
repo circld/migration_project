@@ -1,0 +1,7 @@
+### Bibliography
+
+Nagurney, A. "A Network Model of Migration Equilibrium with Movement Costs." <i>Mathematical and Computer Modelling</i> 13.5 (1990): 79-88. Web.
+
+Pan, J., and A. Nagurney. "Using Markov Chains to Model Human Migration in a Network Equilibrium Framework." <i>Mathematical and Computer Modelling</i> 19.11 (1994): 31-39. Web.
+
+Constant, Amelie F., and Klaus F. Zimmermann. "The Dynamics of Repeat Migration: A Markov Chain Analysis1." International Migration Review 46.2 (2012): 362-88. Web.
