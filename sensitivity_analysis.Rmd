@@ -1,0 +1,221 @@
+### Model dynamics
+
+In this section, model dynamics will be examined. The first subsection will build a base model to use as a benchmark and examine what steady state populations these initial parameters generate. Subsequent subsections will examine various parameter perturbations against this baseline model in order to explore the dynamics of the model.
+
+#### Base model
+The base model relies upon arbitrarily chosen parameter values.
+
+```{r params, message=FALSE, warning=FALSE}
+source('sensitivity_analysis.R')
+
+reset.params <- function() {
+  p <- c(379, 547, 274, 135)
+  k <- c(2400, 1800, 1700, 1900)
+  c <- matrix(c(0,200,400,600,200,0,200,400,400,200,0,200,600,400,200,0),nrow=4)
+  return(list(p = p, k = k, c = c))
+}
+
+params <- reset.params()
+params$c  # matrix of costs for moving from region i (row) to j (col)
+```
+
+Initial utility is:
+
+```{r utility}
+params$k - params$p
+```
+
+```{r base, echo=FALSE}
+# baseline model
+params <- reset.params()
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Base model")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+We see that the populations converge after roughly 10,000 iterations, with relative stability across the different regions beyond that point. In the case of region 1, the population appears to converge to a steady state population of roughly 800. Region 2, 3, and 4 converge to equilibrium populations of roughly 200, 100, and 300, respectively. Steady state utilities across regions do not vary by much.
+
+#### Initial conditions
+
+Now that a base model has been run and examined, it is possible to explore whether its results are robust to changes in initial conditions. In the base model, the initial populations are 379, 547, 274, 135 for regions 1-4, respectively. Suppose the initial populations are instead, 0, 0, 0, 1335.
+
+```{r pop.4, echo=FALSE}
+# population is completely in region 4 initially
+params <- reset.params()
+params$p <- c(0, 0, 0, 1335)
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Initial population (0, 0, 0, 1335)")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+The steady state populations and utilities are remarkably similar to the base model.
+
+Suppose the population is split evenly between regions 1 and 4.
+
+```{r pop.1.4, echo=FALSE}
+# population is evenly split between regions 1 and 4
+params <- reset.params()
+params$p <- c(667, 0, 0, 668)
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Initial population (667, 0, 0, 668)")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+Once again, the population in each region quickly converges to the same steady state values as in the base model. We conclude that the steady state values are stable.
+
+#### Cost of moving
+
+Since the decision to move from one region to the other is a function of the utilities at both the source and destination regions, and cost, changing the cost of moving should directly impact the steady state populations. Specifically, the steady state population of a region should increase with cost out of that region and decrease with cost into that region.
+
+If costs are increased for all moves into a region, fewer people will move into that region in steady state since the increased cost will effectively eat into the utility differential between the two regions. Simulation confirms this intuition.
+
+```{r cost.in, echo=FALSE}
+params <- reset.params()
+
+# increase cost of moving into region 1
+params$c[1:4, 1] <- params$c[1:4, 1] * 2
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Double cost into region 1")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+A similar reasoning applies to costs for moving out a region, implying that fewer people will move out in equilibrium. Once again, simulation is in line with expectations.
+
+```{r cost.out, echo=FALSE}
+params <- reset.params()
+
+# increase cost of moving out of region 1
+params$c[1, 1:4] <- params$c[1, 1:4] * 2
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Double cost out of region 1")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+An interesting case is when costs are increased proportionally across all pairwise moves. We would expect that if costs are high enough, no moves will take place and the steady state will be the initial populations. For smaller increases, it is less clear: relative attractiveness among regions remains unchanged from the base case, but how steady state populations are affected is not immediately evident.
+
+```{r cost.all, echo=FALSE}
+params <- reset.params()
+
+# quadruple all pairwise moving costs
+params$c <- params$c * 4
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Quadruple all costs")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+
+# tenfold increase
+params <- reset.params()
+params$c <- params$c * 10
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Tenfold increase of all costs")
+plot.distribution(model)
+```
+
+It appears that when costs quadruple, steady state populations do not change noticeably. Convergence appears to suffer, as the acceptance condition in the Metropolis-Hastings algorithm rejects more proposed moves. With a tenfold proportional increase in costs, we see hardly any movement from the starting conditions, as we would expect when costs are extremely high.
+
+#### Utility
+
+The base model computes the utility in the form of $u_i = k_i - p_i$, where $k_1 = 2400$, $k_2 = 1800$, $k_3 = 1700$, and $k_4 = 1900$.
+
+Decreasing $k_1$ to 2000, we would expect the steady state population of region 1 to decrease and the populations of region 2, 3, and 4 to increase.
+
+```{r utility.1, echo=FALSE}
+params <- reset.params()
+
+# decrease k_1 to 2000
+params$k[1] <- 2000
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Decrease utility parameter of region 1")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+As expected, the steady state population of region 1 is much smaller, at just below 500.
+
+What would happen if the $k$ parameter is equal across all regions? The steady state populations will be roughly equal to each other.
+
+```{r utility.equal, echo=FALSE}
+params <- reset.params()
+
+# set all k = 1950
+params$k <- rep(1950, times = 4)
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Utility parameter equal across regions")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+As the graphic above clearly demonstrates, the steady state utility levels and populations are approximately equal.
+
+Given that a proportional increase or decrease of the cost of moving (below extreme levels) appears to leave the steady state distribution of population unaffected, we might expect a similar dynamic to hold in the case of utilities. In the below simulation, we double the utilities for all regions and expect to see no change in steady state populations.
+
+```{r utility.double, echo=FALSE}
+params <- reset.params()
+
+# double k
+params$k <- params$k * 2
+initial.utility <- params$k - params$p
+
+model <- run.mcmc(params$p, params$k, params$c)
+plot.by.iter(model, "Double utility parameter across regions")
+plot.distribution(model)
+
+ss.pop <- pop.mean(model[model$iter > 10000, ])
+ss.pop$ss.utility <- params$k - ss.pop$pop.mean
+ss.pop$change.in.utility <- (params$k - ss.pop$pop.mean) - initial.utility
+print(as.data.frame(ss.pop), row.names = c('', '', '', ''))
+```
+
+Doubling all utility parameter values has a very different effects than doubling (or halving) all moving costs. Rather than maintain the same steady states, region 1 now accumulates a much larger share of the equilibrium population, while region 2 and 3 are essentially driven to zero.
