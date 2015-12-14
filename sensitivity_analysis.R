@@ -51,7 +51,7 @@ plot.by.iter <- function(df, title) {
 
   ggplot(df, aes(x=iter, y=population, color=region), environment=.e) +
     geom_line() + ylim(0, total) + theme_bw() +
-    ggtitle(title)
+    ggtitle(title) + theme(plot.title=element_text(size=8))
 }
 
 plot.distribution <- function(df) {
