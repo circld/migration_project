@@ -1,0 +1,44 @@
+---
+title: "Methodology"
+author: "Charley Ferrari, Paul Garaud, Dieudonne Ouedraogo"
+date: "December 13, 2015"
+output: html_document
+---
+
+### Methodology
+
+Our model takes utilities and costs and models an individual's decision to move as a step in a markov chain monte carlo algorithm. 
+
+Considering $n$ locations, in its broadest terms the algorithm works as follows:
+
+- Pick a source location, $i$, sampling from all locations with non-zero populations with equal weights.
+
+- Pick a destination location, $j$, sampling from all locations (except for i) with equal weights (an individual may move to a location with a current population of zero.)
+
+- Compare $u_i (p) + c_{ij}$ to $u_j (p)$
+
+- If $u_i (p) + c_{ij} \geq u_j (p)$, accept the move with probability 1.
+
+- If $u_i (p) + c_{ij} < u_j (p)$, accept the move with some probability.
+
+The first major departure needed to adopt Pan and Nagurney's model to MCMC is a subtle one. Given $n$ locations, Pan and Nagurney's markov chain has $n$ states. In our model, each possible population distribution is a state of our markov chain, and we're randomly walking around this distribution space. This state can be described as the total number of population vectors $p = [p_1, p_2, p_3, ..., p_n]$ with a total population $t$ such that $\sum_{i=1}^n p = t$.
+
+The general form of the probability $a$ of accepting a state change to proposal state $x'$ drawn from probability distribution $Q(p)$ from state $x_t$ is:
+
+$$ a = \frac{P(x')}{P(x_t)} \frac{Q(x_t | x')}{Q(x' | x_t)} $$
+
+$\frac{P(x')}{P(x_t)}$ is calculated by comparing the utility $u_i (p)$ of staying in location $i$ with the utility $u_j (p) - c_{ij}$ of moving. So:
+
+$$ \frac{P(x')}{P(x_t)} = \frac{u_j (p) - c_{ij}}{u_i (p)} $$
+
+The second ratio is a test to see if the proposal distribution is symmetric. The proposal distribution is based on the distribution space defined above. By picking a random source and random destination, we are limiting ourselves to the number of states acheivable by moving one person from one location to another. Given $n$ locations, and $n_{p \neq 0}$ locations with non-zero populations, and the current popuation distribution state $x_t$, the proposal distribution $Q(x' | x_t)$ includes these $n n_{p \neq 0}$ states weighted equally, with zero probability of reaching any other state.
+
+In most cases, our proposal distribution is symmetric. If we're considering a move between locations $i$ and $j$, representing a change in state from $x_t$ to $x'$, and locations $i$ and $j$ are both non-zero, the number of states accessible from either $x_t$ or $x'$ is simply $n n_{p \neq 0}$. The probability $Q(x_t | x') = Q(x' | x_t) = \frac{1}{n n_{p \neq 0}}$.
+
+The only state changes of $x_t$ to $x'$ that aren't symmetric are $x_t$'s where the populations $p_i = 1$ or $p_j = 0$. In these cases, the number of locations with non-zero populations change, for obvious reasons, so $Q(x_t | x') \neq Q(x' | x_t)$. Interestingly, if $p_i = 1$ and $p_j = 0$, the situation remains symmetric.
+
+This means our final probability $a$ of accepting a move from location $i$ to $j$, representing a state change from state $x_t$ to state $x'$ is:
+
+$$ a = \frac{u_i (p)}{u_j (p) - c_{ij}} \frac{1/(n n_{p \neq 0, x_t})}{1/(n n_{p \neq 0, x'})} $$
+
+Our code can be found in Appendix A. Combining our general algorithm above with the theory, the probability with which we accept a move is calculated as $a$. If $a$ is greater than one, we accept the move. If $a$ is less than one, then $a$ represents the probability of accepting the move.

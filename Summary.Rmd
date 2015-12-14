@@ -1,0 +1,22 @@
+---
+title: "Discussion Next Steps"
+author: "Charley Ferrari, Paul Garaud, Dieudonne Ouedraogo"
+date: "December 13, 2015"
+output: html_document
+---
+
+## Summary and Future Works
+
+This model represents an alternative way to view chains of migration. One can use these models to analyze not just what an equilibrium population is, but how an equilibrium is reached. Nagurney's previous network equilibrium model only commented on the former.
+
+By allowing population to be simulated using monte carlo methods, our model introduces randomness into the population model that Pan and Nagurney's model does not include. While migration is definitely influenced by external macroeconomic factors, moves that lower an individuals' economic utility can be expected to occur. This randomness can represent personal choices: the desire to be close to family for example. Our model accepts this randomness, but also allows utility to enter into the equation. Calculating our acceptance probabilities based on relative utility can be thought of as modeling an individuals decision to accept a move for personal reasons. An individual may be willing to accept a small drop in opportunities to be close to their family, but wouldn't be willing to move to a severely economically depressed area for example.
+
+Both of our models allow the study of chained migration, which set them apart from Nagurney's original Network Model of Migration Equilibrium. Time in Pan and Nagurney's model can be represented by the speed at which the markov chains converge. In our model, time is also represented by a speed of convergence, but this speed is influenced by the dynamics of how often moves are accepted by individuals. 
+
+In both of these cases, this concept of time can be used in future research. Utility functions may change with time, and more importantly utility functions may change before previous equilibriums are reached. For example, assuming a situation where it will take 10 years to arrive at a population equilibrium, our models can be used to show what would happen if an economic collapse occurred in one of the regions 5 years before equilibrium was reached. Viewing migration as a chained phenomenon allows us to see how exogenous changes in utility affect migration already influenced by differences in utility.
+
+Currently, utility and costs are defined abstractly. Future research can also be done to relate these abstract concepts to concrete economic measures. We interpreted the constant term in our utility functions to be a "capacity" of the region. This concept of capacity can be used to relate economic measures such as employment to population.
+
+A person entering an economy has two opposing effects on employment. By entering the economy, this person will increase the labor supply, which would be expected to have a negative impact on the employment rate. However, this person is also a consumer, and their consumption will lead to economic growth, which can be expected to increase employment. Capacity can be seen as a measure of the relative effects of these two countervailing forces. An economy at below capacity for example may be able to more efficiently absorb a person. Costs could be modeled in a similar way. Home prices, for example, could be factored into a more practical model.
+
+The goal of relating economic concepts to utilities and costs would be to forecast migration given different economic scenarios. This would allow us to answer questions such as how an exogenously developing regional economy would be expected to affect migration in the near term, or how quickly would an economic shock induce migration to neighboring regions.
