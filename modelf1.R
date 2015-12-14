@@ -42,12 +42,12 @@ step.MCMC <- function(pop, capacity, move.cost) {
   if(p[1] == 1 && p[2] == 0){
     a2 <- 1
   } else if(p[1] == 1){
-    qxxnew <- 1/(lpop0*lpop - lpop0)
-    qxnewx <- 1/(lpop0m1*lpop - lpop0m1)
+    qxxnew <- 1/(lpop0*(lpop-1))
+    qxnewx <- 1/(lpop0m1*(lpop-1))
     a2 <- qxxnew/qxnewx
   } else if(p[2] == 0){
-    qxxnew <- 1/(lpop0*lpop - lpop0)
-    qxnewx <- 1/(lpop0p1*lpop - lpop0p1)
+    qxxnew <- 1/(lpop0*(lpop-1))
+    qxnewx <- 1/(lpop0p1*(lpop-1))
     a2 <- qxxnew/qxnewx
   } else{
     a2 <- 1

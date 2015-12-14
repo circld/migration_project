@@ -37,6 +37,24 @@ The solution to this toy model is explained and diagrammed below:
 
 In this case, the transition matrix is the same (and the derivation shows in what way they will differ.)
 
+Pan and Nagurney reference an earlier paper written by Nagurney: A Network Model of Migration Equilibrium with Movement Cost (Nagurney 1990). In this paper, Nagurney provides a very similar model to population, but does not express it in terms of markov chains. Costs are assumed to be fixed, rather than based on flow. Utility functions are similar to the ones represented in the markov chain model, and are formally defined as $u_i = -a_i p_i + b_i$. 
+
+Nagurney shows that the question of optimal flows and equilibrium populations is solveable using quadratic programming. Given utility defined above, and costs defined as $c_{ij}$, the problem becomes: 
+
+Minimize
+
+$$ \sum_i \frac{1}{2} a_i(\sum_{k \neq 1} f_{ki} - \sum_{k \neq 1} f_{ik} + \bar{p_i})^2 - \sum_{i} b_i (\sum_{k \neq 1} f_{ki} - \sum_{k \neq 1} f{ik} + \bar{p_i}) + \sum_{i,k \neq i} c_{ik} f_{ik} $$
+
+Subject to 
+
+$$ \sum_k f_{ik} \leq \bar{p_i}, \forall i $$
+
+and 
+
+$$ f_{ik} \geq 0, \forall i $$
+
+After defining the problem, Nagurney suggests an algorithm to solve it. Problems like this were solved step by step and numerically using markov chains when they were introduced to the model.
+
 Other attempts at explaining migration using markov chains include A. Constant's and K. Zimmerman's paper "The Dynamics of Repeat Migration: A Markov Chain Analysis." (Constant, Zimmerman 2012.) Using a Markov Chain approach to model repeat migration, this paper aims to describe the dynamics of repeated exit and entry between two countries. The paper estimates the transition probabilities using the formula $P(E_{t+1} = i | E_t = j) = \frac{e^{\beta} ij^{x} mt}{\sum e^{\beta} ik^{x} mt}$ using empirical data from Germany. These irepresent the coefficients on the personal characteristics variables for transition state i (note that only two transition state coefficient vectors are calculated as the other two are complements and calculated by taking 1 - P) and are estimated using logistic regression.
 	
 The paper then converts micro level longitudinal migration data at the individual level to person-years, which are treated as separate observations, to estimate these conditional probabilities. The end result are empirically-derived formulae that describe the personal characteristics that influence the decision to (repeat) migrate.
