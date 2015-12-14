@@ -31,14 +31,14 @@ $\frac{P(x')}{P(x_t)}$ is calculated by comparing the utility $u_i (p)$ of stayi
 
 $$ \frac{P(x')}{P(x_t)} = \frac{u_j (p) - c_{ij}}{u_i (p)} $$
 
-The second ratio is a test to see if the proposal distribution is symmetric. The proposal distribution is based on the distribution space defined above. By picking a random source and random destination, we are limiting ourselves to the number of states acheivable by moving one person from one location to another. Given $n$ locations, and $n_{p \neq 0}$ locations with non-zero populations, and the current popuation distribution state $x_t$, the proposal distribution $Q(x' | x_t)$ includes these $n n_{p \neq 0}$ states weighted equally, with zero probability of reaching any other state.
+The second ratio is a test to see if the proposal distribution is symmetric. The proposal distribution is based on the distribution space defined above. By picking a random source and random destination, we are limiting ourselves to the number of states acheivable by moving one person from one location to another. Given $n$ locations, and $n_{p \neq 0}$ locations with non-zero populations, and the current popuation distribution state $x_t$, the proposal distribution $Q(x' | x_t)$ includes these $n_{p \neq 0} (n-1)$ states weighted equally, with zero probability of reaching any other state.
 
-In most cases, our proposal distribution is symmetric. If we're considering a move between locations $i$ and $j$, representing a change in state from $x_t$ to $x'$, and locations $i$ and $j$ are both non-zero, the number of states accessible from either $x_t$ or $x'$ is simply $n n_{p \neq 0}$. The probability $Q(x_t | x') = Q(x' | x_t) = \frac{1}{n n_{p \neq 0}}$.
+In most cases, our proposal distribution is symmetric. If we're considering a move between locations $i$ and $j$, representing a change in state from $x_t$ to $x'$, and locations $i$ and $j$ are both non-zero, the number of states accessible from either $x_t$ or $x'$ is simply $n_{p \neq 0} (n-1)$. The probability $Q(x_t | x') = Q(x' | x_t) = \frac{1}{n_{p \neq 0} (n-1)}$.
 
 The only state changes of $x_t$ to $x'$ that aren't symmetric are $x_t$'s where the populations $p_i = 1$ or $p_j = 0$. In these cases, the number of locations with non-zero populations change, for obvious reasons, so $Q(x_t | x') \neq Q(x' | x_t)$. Interestingly, if $p_i = 1$ and $p_j = 0$, the situation remains symmetric.
 
 This means our final probability $a$ of accepting a move from location $i$ to $j$, representing a state change from state $x_t$ to state $x'$ is:
 
-$$ a = \frac{u_i (p)}{u_j (p) - c_{ij}} \frac{1/(n n_{p \neq 0, x_t})}{1/(n n_{p \neq 0, x'})} $$
+$$ a = \frac{u_i (p)}{u_j (p) - c_{ij}} \frac{1/(n_{p \neq 0, x_t} (n-1))}{1/(n_{p \neq 0, x'} (n-1))} $$
 
 Our code can be found in Appendix A. Combining our general algorithm above with the theory, the probability with which we accept a move is calculated as $a$. If $a$ is greater than one, we accept the move. If $a$ is less than one, then $a$ represents the probability of accepting the move.

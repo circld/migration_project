@@ -1,0 +1,30 @@
+---
+title: "A Simulation of Bilateral Migration Using Markov Chain Monte Carlo"
+author: "Charley Ferrari, Paul Garaud, Dieudonne Ouedraogo"
+date: "December 13, 2015"
+output: html_document
+---
+
+```{r child = 'abstract.Rmd'}
+```
+
+```{r child = 'IS604_Final_Writeup.Rmd'}
+```
+
+```{r child = 'methodology.Rmd'}
+```
+
+```{r child = 'sensitivity_analysis.Rmd'}
+```
+
+```{r child = 'convergence.Rmd'}
+```
+
+```{r child = 'summary.Rmd'}
+```
+
+```{r child = 'appendix.Rmd'}
+```
+
+```{r child = 'bibliography.Rmd'}
+```
